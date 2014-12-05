@@ -1,4 +1,4 @@
-# kf
+# bdcat
 
 A tool to decode [baldr](https://github.com/uswitch/baldr) files.
 
