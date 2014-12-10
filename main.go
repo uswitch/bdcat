@@ -39,19 +39,19 @@ func process(reader io.Reader) error {
 func processFilesOrStdin(filenames []string, process func(io.Reader) error) error {
 	if len(filenames) == 0 {
 		return process(os.Stdin)
-	} else {
-		for _, filename := range filenames {
-			file, err := os.Open(filename)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-			if err := process(file); err != nil {
-				return err
-			}
-		}
-		return nil
 	}
+
+	for _, filename := range filenames {
+		file, err := os.Open(filename)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		if err := process(file); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func main() {
