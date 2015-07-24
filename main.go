@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"gopkg.in/alecthomas/kingpin.v1"
+	"gopkg.in/alecthomas/kingpin.v2"
 	"io"
 	"os"
 )
 
 var (
 	filenames = kingpin.Arg("file", "baldr file to decode").Strings()
+  nullDelimited = kingpin.Flag("null", "delimit output will null").Short('0').Bool()
 )
 
 func readBaldr(reader io.Reader) ([]byte, error) {
@@ -22,11 +23,16 @@ func readBaldr(reader io.Reader) ([]byte, error) {
 	return data, err
 }
 
-func process(reader io.Reader) error {
+func process(reader io.Reader, nullDelimited bool) error {
 	for {
 		data, err := readBaldr(reader)
 		if data != nil {
-			fmt.Println(string(data[:]))
+			fmt.Print(string(data[:]))
+			if nullDelimited {
+				fmt.Print("\x00")
+			} else {
+				fmt.Println()
+			}
 		}
 		if err == io.EOF {
 			return nil
@@ -36,9 +42,9 @@ func process(reader io.Reader) error {
 	}
 }
 
-func processFilesOrStdin(filenames []string, process func(io.Reader) error) error {
+func processFilesOrStdin(filenames []string, nullDelimited bool, process func(io.Reader, bool) error) error {
 	if len(filenames) == 0 {
-		return process(os.Stdin)
+		return process(os.Stdin, nullDelimited)
 	}
 
 	for _, filename := range filenames {
@@ -47,7 +53,7 @@ func processFilesOrStdin(filenames []string, process func(io.Reader) error) erro
 			return err
 		}
 		defer file.Close()
-		if err := process(file); err != nil {
+		if err := process(file, nullDelimited); err != nil {
 			return err
 		}
 	}
@@ -57,7 +63,7 @@ func processFilesOrStdin(filenames []string, process func(io.Reader) error) erro
 func main() {
 	kingpin.Parse()
 
-	if err := processFilesOrStdin(*filenames, process); err != nil {
+	if err := processFilesOrStdin(*filenames, *nullDelimited, process); err != nil {		
 		fmt.Fprintln(os.Stderr, err)
 	}
 }
