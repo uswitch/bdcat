@@ -10,7 +10,7 @@ import (
 
 var (
 	filenames = kingpin.Arg("file", "baldr file to decode").Strings()
-  nullDelimited = kingpin.Flag("null", "delimit output will null").Short('0').Bool()
+  nullDelimited = kingpin.Flag("null", "delimit output with null").Short('0').Bool()
 )
 
 func readBaldr(reader io.Reader) ([]byte, error) {
