@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	filenames = kingpin.Arg("file", "baldr file to decode").Strings()
-  nullDelimited = kingpin.Flag("null", "delimit output with null").Short('0').Bool()
+	filenames     = kingpin.Arg("file", "baldr file to decode").Strings()
+	nullDelimited = kingpin.Flag("null", "delimit output with null").Short('0').Bool()
 )
 
 func readBaldr(reader io.Reader) ([]byte, error) {
@@ -63,7 +63,7 @@ func processFilesOrStdin(filenames []string, nullDelimited bool, process func(io
 func main() {
 	kingpin.Parse()
 
-	if err := processFilesOrStdin(*filenames, *nullDelimited, process); err != nil {		
+	if err := processFilesOrStdin(*filenames, *nullDelimited, process); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 }
